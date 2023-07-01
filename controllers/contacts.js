@@ -3,8 +3,14 @@ const catchAsync = require("../utils/catchAsync");
 const httpError = require("../utils/httpError");
 
 const listContacts = async (req, res) => {
-  const data = await Contact.find({}, "-createdAt -updateAt");
-  return res.JSON(data);
+  const { _id: owner } = req.user;
+  const { page = 1, limit = 20 } = req.query;
+  const skip = (page - 1) * limit;
+  const data = await Contact.find({ owner }, "-createdAt -updatedAt", {
+    skip,
+    limit,
+  }).populate("owner");
+  res.json(data);
 };
 
 const getContactById = async (req, res) => {
@@ -13,7 +19,7 @@ const getContactById = async (req, res) => {
   if (!result) {
     throw httpError(404, "Not Found");
   }
-  return res.JSON(result);
+  return res.json(result);
 };
 
 const removeContact = async (req, res) => {
@@ -22,14 +28,15 @@ const removeContact = async (req, res) => {
   if (!result) {
     throw httpError(404, "Not Found");
   }
-  return res.JSON({
+  return res.json({
     message: "Delete success",
   });
 };
 
 const addContact = async (req, res) => {
-  const result = await Contact.create(req.body);
-  return res.status(201).JSON(result);
+  const { _id: owner } = req.user;
+  const result = await Contact.create({ ...req.body, owner });
+  res.status(201).json(result);
 };
 
 const updateContact = async (req, res) => {
