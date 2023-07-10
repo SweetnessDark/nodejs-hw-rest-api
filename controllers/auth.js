@@ -6,7 +6,6 @@ const fs = require("fs/promises");
 const gravatar = require("gravatar");
 const jimp = require("jimp");
 const httpError = require("../utils/httpError");
-const catchAsync = require("../utils/catchAsync");
 
 const { SECRET_KEY } = process.env;
 
@@ -100,9 +99,9 @@ const updateAvatar = async (req, res) => {
 };
 
 module.exports = {
-  register: catchAsync(register),
-  login: catchAsync(login),
-  logout: catchAsync(logout),
-  getCurrent: catchAsync(getCurrent),
-  updateAvatar: catchAsync(updateAvatar),
+  register,
+  login,
+  logout,
+  getCurrent,
+  updateAvatar,
 };
